@@ -5,23 +5,24 @@ import { StyleSheet, Text, View } from "react-native";
 type GuessProps = {
   value: string;
   submitted: boolean;
-  answer: string;
+  answerLetterMap: Map<string, number[]>;
 };
 
-const Guess = ({ value, submitted, answer }: GuessProps) => {
+const Guess = ({ value, submitted, answerLetterMap }: GuessProps) => {
   const getBackgroundColour = (letterIdx: number) => {
     if (!submitted) {
       return styles.whiteBackground;
     }
-    const matchingIdx = answer
-      .toUpperCase()
-      .indexOf(value.toUpperCase()[letterIdx]);
-    if (matchingIdx === -1) {
-      return styles.greyBackground;
-    } else if (matchingIdx !== letterIdx) {
+
+    const letter = value[letterIdx].toUpperCase();
+
+    if (answerLetterMap.has(letter)) {
+      if (answerLetterMap.get(letter)!.includes(letterIdx)) {
+        return styles.greenBackground;
+      }
       return styles.yellowBackground;
     } else {
-      return styles.greenBackground;
+      return styles.greyBackground;
     }
   };
   value = value.toUpperCase();
@@ -119,10 +120,26 @@ const Keyboard = ({ onKeyPress, onDelete, onSubmit }: KeyboardProps) => {
   );
 };
 
+const createAnswerLetterMap = (answer: string) => {
+  const letterMap: Map<string, number[]> = new Map();
+  answer
+    .toUpperCase()
+    .split("")
+    .forEach((char, i) => {
+      if (letterMap.has(char)) {
+        letterMap.get(char)!.push(i);
+      } else {
+        letterMap.set(char, [i]);
+      }
+    });
+  return letterMap;
+};
+
 export default function App() {
   const [guesses, setGuesses] = useState<string[]>([]);
   const [currentGuess, setCurrentGuess] = useState("");
-  const word = "HELLO";
+  const answer = "HELLO";
+  const answerLetterMap = createAnswerLetterMap(answer);
   const onSubmit = () => {
     if (currentGuess.length < 5) {
       return;
@@ -147,32 +164,32 @@ export default function App() {
       <Guess
         value={guesses[0] ?? (guesses.length === 0 ? currentGuess : "")}
         submitted={guesses.length >= 1}
-        answer={word}
+        answerLetterMap={answerLetterMap}
       />
       <Guess
         value={guesses[1] ?? (guesses.length === 1 ? currentGuess : "")}
         submitted={guesses.length >= 2}
-        answer={word}
+        answerLetterMap={answerLetterMap}
       />
       <Guess
         value={guesses[2] ?? (guesses.length === 2 ? currentGuess : "")}
         submitted={guesses.length >= 3}
-        answer={word}
+        answerLetterMap={answerLetterMap}
       />
       <Guess
         value={guesses[3] ?? (guesses.length === 3 ? currentGuess : "")}
         submitted={guesses.length >= 4}
-        answer={word}
+        answerLetterMap={answerLetterMap}
       />
       <Guess
         value={guesses[4] ?? (guesses.length === 4 ? currentGuess : "")}
         submitted={guesses.length >= 5}
-        answer={word}
+        answerLetterMap={answerLetterMap}
       />
       <Guess
         value={guesses[5] ?? (guesses.length === 5 ? currentGuess : "")}
         submitted={guesses.length >= 6}
-        answer={word}
+        answerLetterMap={answerLetterMap}
       />
       <Keyboard
         onKeyPress={onKeyPress}
