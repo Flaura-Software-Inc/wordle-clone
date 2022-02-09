@@ -164,7 +164,6 @@ export default function App() {
   const [guesses, setGuesses] = useState<string[]>([]);
   const [currentGuess, setCurrentGuess] = useState("");
   const answer = "HELLO";
-  const answerLetterMap = createLetterMap(answer);
   const onSubmit = () => {
     if (currentGuess.length < 5) {
       return;
