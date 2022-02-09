@@ -164,6 +164,25 @@ export default function App() {
   const [guesses, setGuesses] = useState<string[]>([]);
   const [currentGuess, setCurrentGuess] = useState("");
   const answer = "HELLO";
+  const [correctLetters, setCorrectLetters] = useState<string[]>([]);
+  const [closeMatchLetters, setCloseMatchLetters] = useState<string[]>([]);
+  const [incorrectLetters, setIncorrectLetters] = useState<string[]>([]);
+
+  const addCorrectLetter = (char: string) => {
+    // if letter in yellow, remove it
+    // add to correct letters
+    // set, only one of each thing
+  };
+
+  const addCloseMatchLetter = (char: string) => {
+    // if in correct letters, do nothing
+    // else add to close match
+  };
+
+  const addIncorrectLetter = (char: string) => {
+    // just add
+  };
+
   const onSubmit = () => {
     if (currentGuess.length < 5) {
       return;
@@ -172,6 +191,7 @@ export default function App() {
     setCurrentGuess("");
     // detect whether the game has been won
   };
+
   const onKeyPress = (char: string) => {
     if (currentGuess.length < 5) {
       setCurrentGuess(currentGuess + char);
