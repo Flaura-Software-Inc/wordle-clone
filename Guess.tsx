@@ -113,12 +113,6 @@ export default function Guess({
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
   guess: {
     width: "85%",
     flexDirection: "row",
@@ -135,30 +129,6 @@ const styles = StyleSheet.create({
   },
   letter: {
     fontSize: 30,
-  },
-  keyboard: {
-    marginTop: 20,
-    width: "85%",
-  },
-  keyboardRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 10,
-  },
-  keyboardKey: {
-    fontSize: 25,
-    width: 30,
-    height: 50,
-    borderColor: "black",
-    borderWidth: 2,
-    alignItems: "center",
-    justifyContent: "center",
-    marginLeft: 3,
-    marginRight: 3,
-  },
-  keyboardLetter: {
-    fontSize: 20,
   },
   greenBackground: {
     backgroundColor: "green",
@@ -177,8 +147,5 @@ const styles = StyleSheet.create({
   },
   whiteText: {
     color: "white",
-  },
-  blackText: {
-    color: "black",
   },
 });

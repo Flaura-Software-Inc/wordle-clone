@@ -88,29 +88,6 @@ export default function Keyboard({
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  guess: {
-    width: "85%",
-    flexDirection: "row",
-    justifyContent: "space-evenly",
-    marginTop: 10,
-  },
-  guessBox: {
-    width: 60,
-    height: 60,
-    borderWidth: 2,
-    borderColor: "lightgrey",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  letter: {
-    fontSize: 30,
-  },
   keyboard: {
     marginTop: 20,
     width: "85%",
