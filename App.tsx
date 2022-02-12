@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { StyleSheet, Text, TextStyle, View, ViewStyle } from "react-native";
 
 type GuessProps = {
@@ -35,48 +35,50 @@ const Guess = ({
   addIncorrectLetter,
 }: GuessProps) => {
   const answerLetterMap = createLetterMap(answer);
-  const tileColours = [
+  const [tileColours, setTileColours] = useState([
     styles.whiteBackground,
     styles.whiteBackground,
     styles.whiteBackground,
     styles.whiteBackground,
     styles.whiteBackground,
-  ];
+  ]);
 
-  if (submitted) {
-    const guessLetterMap: Map<string, number[]> = createLetterMap(value);
+  useEffect(() => {
+    if (submitted) {
+      const guessLetterMap: Map<string, number[]> = createLetterMap(value);
 
-    Array.from(guessLetterMap.keys()).forEach((char) => {
-      let charIndexes = guessLetterMap.get(char);
+      Array.from(guessLetterMap.keys()).forEach((char) => {
+        let charIndexes = guessLetterMap.get(char);
 
-      if (!answerLetterMap.has(char)) {
-        charIndexes!.forEach(
-          (charIdx) => (tileColours[charIdx] = styles.greyBackground)
-        );
-        addIncorrectLetter(char);
-      } else {
-        charIndexes!.forEach((charIdx) => {
-          if (answerLetterMap.get(char)!.includes(charIdx)) {
-            tileColours[charIdx] = styles.greenBackground;
-            charIndexes = charIndexes!.filter((idx) => idx !== charIdx);
-            answerLetterMap.set(
-              char,
-              answerLetterMap.get(char)!.filter((idx) => idx !== charIdx)
-            );
-            addCorrectLetter(char);
-          }
-        });
-        charIndexes!.forEach((charIdx, i) => {
-          if (i < answerLetterMap.get(char)!.length) {
-            tileColours[charIdx] = styles.yellowBackground;
-            addCloseMatchLetter(char);
-          } else {
-            tileColours[charIdx] = styles.greyBackground;
-          }
-        });
-      }
-    });
-  }
+        if (!answerLetterMap.has(char)) {
+          charIndexes!.forEach(
+            (charIdx) => (tileColours[charIdx] = styles.greyBackground)
+          );
+          addIncorrectLetter(char);
+        } else {
+          charIndexes!.forEach((charIdx) => {
+            if (answerLetterMap.get(char)!.includes(charIdx)) {
+              tileColours[charIdx] = styles.greenBackground;
+              charIndexes = charIndexes!.filter((idx) => idx !== charIdx);
+              answerLetterMap.set(
+                char,
+                answerLetterMap.get(char)!.filter((idx) => idx !== charIdx)
+              );
+              addCorrectLetter(char);
+            }
+          });
+          charIndexes!.forEach((charIdx, i) => {
+            if (i < answerLetterMap.get(char)!.length) {
+              tileColours[charIdx] = styles.yellowBackground;
+              addCloseMatchLetter(char);
+            } else {
+              tileColours[charIdx] = styles.greyBackground;
+            }
+          });
+        }
+      });
+    }
+  }, [submitted]);
 
   value = value.toUpperCase();
   // set outline to black for filled letter
@@ -213,7 +215,7 @@ export default function App() {
       );
     }
     if (correctLetters.indexOf(char) === -1) {
-      setCorrectLetters([...correctLetters, char]);
+      setCorrectLetters((correctLetters) => [...correctLetters, char]);
     }
   };
 
@@ -222,13 +224,13 @@ export default function App() {
       return;
     }
     if (closeMatchLetters.indexOf(char) === -1) {
-      setCloseMatchLetters([...closeMatchLetters, char]);
+      setCloseMatchLetters((closeMatchLetters) => [...closeMatchLetters, char]);
     }
   };
 
   const addIncorrectLetter = (char: string) => {
     if (incorrectLetters.indexOf(char) === -1) {
-      setIncorrectLetters([...incorrectLetters, char]);
+      setIncorrectLetters((incorrectLetters) => [...incorrectLetters, char]);
     }
   };
 
