@@ -1,11 +1,14 @@
 import { StatusBar } from "expo-status-bar";
-import { useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { useEffect, useState } from "react";
+import { StyleSheet, Text, TextStyle, View, ViewStyle } from "react-native";
 
 type GuessProps = {
   value: string;
   submitted: boolean;
   answer: string;
+  addCorrectLetter: (char: string) => void;
+  addCloseMatchLetter: (char: string) => void;
+  addIncorrectLetter: (char: string) => void;
 };
 
 const createLetterMap = (answer: string) => {
@@ -23,47 +26,59 @@ const createLetterMap = (answer: string) => {
   return letterMap;
 };
 
-const Guess = ({ value, submitted, answer }: GuessProps) => {
+const Guess = ({
+  value,
+  submitted,
+  answer,
+  addCloseMatchLetter,
+  addCorrectLetter,
+  addIncorrectLetter,
+}: GuessProps) => {
   const answerLetterMap = createLetterMap(answer);
-  const tileColours = [
+  const [tileColours, setTileColours] = useState([
     styles.whiteBackground,
     styles.whiteBackground,
     styles.whiteBackground,
     styles.whiteBackground,
     styles.whiteBackground,
-  ];
+  ]);
 
-  if (submitted) {
-    const guessLetterMap: Map<string, number[]> = createLetterMap(value);
+  useEffect(() => {
+    if (submitted) {
+      const guessLetterMap: Map<string, number[]> = createLetterMap(value);
 
-    Array.from(guessLetterMap.keys()).forEach((char) => {
-      let charIndexes = guessLetterMap.get(char);
+      Array.from(guessLetterMap.keys()).forEach((char) => {
+        let charIndexes = guessLetterMap.get(char);
 
-      if (!answerLetterMap.has(char)) {
-        charIndexes!.forEach(
-          (charIdx) => (tileColours[charIdx] = styles.greyBackground)
-        );
-      } else {
-        charIndexes!.forEach((charIdx) => {
-          if (answerLetterMap.get(char)!.includes(charIdx)) {
-            tileColours[charIdx] = styles.greenBackground;
-            charIndexes = charIndexes!.filter((idx) => idx !== charIdx);
-            answerLetterMap.set(
-              char,
-              answerLetterMap.get(char)!.filter((idx) => idx !== charIdx)
-            );
-          }
-        });
-        charIndexes!.forEach((charIdx, i) => {
-          if (i < answerLetterMap.get(char)!.length) {
-            tileColours[charIdx] = styles.yellowBackground;
-          } else {
-            tileColours[charIdx] = styles.greyBackground;
-          }
-        });
-      }
-    });
-  }
+        if (!answerLetterMap.has(char)) {
+          charIndexes!.forEach(
+            (charIdx) => (tileColours[charIdx] = styles.greyBackground)
+          );
+          addIncorrectLetter(char);
+        } else {
+          charIndexes!.forEach((charIdx) => {
+            if (answerLetterMap.get(char)!.includes(charIdx)) {
+              tileColours[charIdx] = styles.greenBackground;
+              charIndexes = charIndexes!.filter((idx) => idx !== charIdx);
+              answerLetterMap.set(
+                char,
+                answerLetterMap.get(char)!.filter((idx) => idx !== charIdx)
+              );
+              addCorrectLetter(char);
+            }
+          });
+          charIndexes!.forEach((charIdx, i) => {
+            if (i < answerLetterMap.get(char)!.length) {
+              tileColours[charIdx] = styles.yellowBackground;
+              addCloseMatchLetter(char);
+            } else {
+              tileColours[charIdx] = styles.greyBackground;
+            }
+          });
+        }
+      });
+    }
+  }, [submitted]);
 
   value = value.toUpperCase();
   // set outline to black for filled letter
@@ -102,37 +117,61 @@ type KeyboardProps = {
   onKeyPress: (_: string) => void;
   onDelete: () => void;
   onSubmit: () => void;
+  correctLetters: string[];
+  closeMatchLetters: string[];
+  incorrectLetters: string[];
 };
 
-const Keyboard = ({ onKeyPress, onDelete, onSubmit }: KeyboardProps) => {
+const Keyboard = ({
+  onKeyPress,
+  onDelete,
+  onSubmit,
+  correctLetters,
+  closeMatchLetters,
+  incorrectLetters,
+}: KeyboardProps) => {
   const topRow = "QWERTYUIOP";
   const middleRow = "ASDFGHJKL";
   const bottomRow = "ZXCVBNM";
+
+  const calculateKeyStyles = (char: string): [ViewStyle, TextStyle] => {
+    if (correctLetters.includes(char)) {
+      return [styles.greenBackground, styles.whiteText];
+    } else if (closeMatchLetters.includes(char)) {
+      return [styles.yellowBackground, styles.whiteText];
+    } else if (incorrectLetters.includes(char)) {
+      return [styles.greyBackground, styles.whiteText];
+    } else {
+      return [styles.whiteBackground, styles.blackText];
+    }
+  };
 
   return (
     <View style={styles.keyboard}>
       <View style={styles.keyboardRow}>
         {topRow.split("").map((char) => {
+          const keyStyles = calculateKeyStyles(char);
           return (
             <View
-              style={styles.keyboardKey}
+              style={[styles.keyboardKey, keyStyles[0]]}
               onTouchEnd={() => onKeyPress(char)}
               key={`key-${char}`}
             >
-              <Text style={styles.keyboardLetter}>{char}</Text>
+              <Text style={[styles.keyboardLetter, keyStyles[1]]}>{char}</Text>
             </View>
           );
         })}
       </View>
       <View style={styles.keyboardRow}>
         {middleRow.split("").map((char) => {
+          const keyStyles = calculateKeyStyles(char);
           return (
             <View
-              style={styles.keyboardKey}
+              style={[styles.keyboardKey, keyStyles[0]]}
               onTouchEnd={() => onKeyPress(char)}
               key={`key-${char}`}
             >
-              <Text style={styles.keyboardLetter}>{char}</Text>
+              <Text style={[styles.keyboardLetter, keyStyles[1]]}>{char}</Text>
             </View>
           );
         })}
@@ -142,13 +181,14 @@ const Keyboard = ({ onKeyPress, onDelete, onSubmit }: KeyboardProps) => {
           <Text>Submit</Text>
         </View>
         {bottomRow.split("").map((char) => {
+          const keyStyles = calculateKeyStyles(char);
           return (
             <View
-              style={styles.keyboardKey}
+              style={[styles.keyboardKey, keyStyles[0]]}
               onTouchEnd={() => onKeyPress(char)}
               key={`key-${char}`}
             >
-              <Text style={styles.keyboardLetter}>{char}</Text>
+              <Text style={[styles.keyboardLetter, keyStyles[1]]}>{char}</Text>
             </View>
           );
         })}
@@ -164,7 +204,36 @@ export default function App() {
   const [guesses, setGuesses] = useState<string[]>([]);
   const [currentGuess, setCurrentGuess] = useState("");
   const answer = "HELLO";
-  const answerLetterMap = createLetterMap(answer);
+  const [correctLetters, setCorrectLetters] = useState<string[]>([]);
+  const [closeMatchLetters, setCloseMatchLetters] = useState<string[]>([]);
+  const [incorrectLetters, setIncorrectLetters] = useState<string[]>([]);
+
+  const addCorrectLetter = (char: string) => {
+    if (closeMatchLetters.indexOf(char) !== -1) {
+      setCloseMatchLetters(
+        closeMatchLetters.filter((letter) => letter !== char)
+      );
+    }
+    if (correctLetters.indexOf(char) === -1) {
+      setCorrectLetters((correctLetters) => [...correctLetters, char]);
+    }
+  };
+
+  const addCloseMatchLetter = (char: string) => {
+    if (correctLetters.indexOf(char) !== -1) {
+      return;
+    }
+    if (closeMatchLetters.indexOf(char) === -1) {
+      setCloseMatchLetters((closeMatchLetters) => [...closeMatchLetters, char]);
+    }
+  };
+
+  const addIncorrectLetter = (char: string) => {
+    if (incorrectLetters.indexOf(char) === -1) {
+      setIncorrectLetters((incorrectLetters) => [...incorrectLetters, char]);
+    }
+  };
+
   const onSubmit = () => {
     if (currentGuess.length < 5) {
       return;
@@ -173,6 +242,7 @@ export default function App() {
     setCurrentGuess("");
     // detect whether the game has been won
   };
+
   const onKeyPress = (char: string) => {
     if (currentGuess.length < 5) {
       setCurrentGuess(currentGuess + char);
@@ -190,36 +260,57 @@ export default function App() {
         value={guesses[0] ?? (guesses.length === 0 ? currentGuess : "")}
         submitted={guesses.length >= 1}
         answer={answer}
+        addCorrectLetter={addCorrectLetter}
+        addCloseMatchLetter={addCloseMatchLetter}
+        addIncorrectLetter={addIncorrectLetter}
       />
       <Guess
         value={guesses[1] ?? (guesses.length === 1 ? currentGuess : "")}
         submitted={guesses.length >= 2}
         answer={answer}
+        addCorrectLetter={addCorrectLetter}
+        addCloseMatchLetter={addCloseMatchLetter}
+        addIncorrectLetter={addIncorrectLetter}
       />
       <Guess
         value={guesses[2] ?? (guesses.length === 2 ? currentGuess : "")}
         submitted={guesses.length >= 3}
         answer={answer}
+        addCorrectLetter={addCorrectLetter}
+        addCloseMatchLetter={addCloseMatchLetter}
+        addIncorrectLetter={addIncorrectLetter}
       />
       <Guess
         value={guesses[3] ?? (guesses.length === 3 ? currentGuess : "")}
         submitted={guesses.length >= 4}
         answer={answer}
+        addCorrectLetter={addCorrectLetter}
+        addCloseMatchLetter={addCloseMatchLetter}
+        addIncorrectLetter={addIncorrectLetter}
       />
       <Guess
         value={guesses[4] ?? (guesses.length === 4 ? currentGuess : "")}
         submitted={guesses.length >= 5}
         answer={answer}
+        addCorrectLetter={addCorrectLetter}
+        addCloseMatchLetter={addCloseMatchLetter}
+        addIncorrectLetter={addIncorrectLetter}
       />
       <Guess
         value={guesses[5] ?? (guesses.length === 5 ? currentGuess : "")}
         submitted={guesses.length >= 6}
         answer={answer}
+        addCorrectLetter={addCorrectLetter}
+        addCloseMatchLetter={addCloseMatchLetter}
+        addIncorrectLetter={addIncorrectLetter}
       />
       <Keyboard
         onKeyPress={onKeyPress}
         onDelete={onDelete}
         onSubmit={onSubmit}
+        correctLetters={correctLetters}
+        closeMatchLetters={closeMatchLetters}
+        incorrectLetters={incorrectLetters}
       />
     </View>
   );
@@ -290,5 +381,8 @@ const styles = StyleSheet.create({
   },
   whiteText: {
     color: "white",
+  },
+  blackText: {
+    color: "black",
   },
 });
