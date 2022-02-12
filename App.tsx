@@ -1,6 +1,6 @@
-import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, TextStyle, View, ViewStyle } from "react-native";
+import * as words from "./fiveLetterWords.json";
 
 type GuessProps = {
   value: string;
@@ -203,7 +203,9 @@ const Keyboard = ({
 export default function App() {
   const [guesses, setGuesses] = useState<string[]>([]);
   const [currentGuess, setCurrentGuess] = useState("");
-  const answer = "HELLO";
+  const [answer, setAnswer] = useState(
+    words.words[Math.round(Math.random() * words.words.length)]
+  );
   const [correctLetters, setCorrectLetters] = useState<string[]>([]);
   const [closeMatchLetters, setCloseMatchLetters] = useState<string[]>([]);
   const [incorrectLetters, setIncorrectLetters] = useState<string[]>([]);
@@ -235,7 +237,11 @@ export default function App() {
   };
 
   const onSubmit = () => {
-    if (currentGuess.length < 5) {
+    if (
+      currentGuess.length < 5 ||
+      !words.words.includes(currentGuess.toLowerCase())
+    ) {
+      // toast for reason
       return;
     }
     setGuesses([...guesses, currentGuess]);
