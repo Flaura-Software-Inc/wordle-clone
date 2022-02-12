@@ -4,11 +4,13 @@ import Guess from "./Guess";
 import Keyboard from "./Keyboard";
 import * as words from "./fiveLetterWords.json";
 
+const wordList = words.words;
+
 export default function App() {
   const [guesses, setGuesses] = useState<string[]>([]);
   const [currentGuess, setCurrentGuess] = useState("");
-  const [answer, setAnswer] = useState(
-    words.words[Math.round(Math.random() * words.words.length)]
+  const [answer] = useState(
+    wordList[Math.round(Math.random() * (wordList.length - 1))]
   );
   const [correctLetters, setCorrectLetters] = useState<string[]>([]);
   const [closeMatchLetters, setCloseMatchLetters] = useState<string[]>([]);
