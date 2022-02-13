@@ -3,6 +3,7 @@ import { StyleSheet, View } from "react-native";
 import Guess from "./Guess";
 import Keyboard from "./Keyboard";
 import * as words from "./fiveLetterWords.json";
+import Toast from "react-native-toast-message";
 
 const wordList = words.words;
 
@@ -43,11 +44,20 @@ export default function App() {
   };
 
   const onSubmit = () => {
-    if (
-      currentGuess.length < 5 ||
-      !words.words.includes(currentGuess.toLowerCase())
-    ) {
-      // toast for reason
+    if (currentGuess.length < 5) {
+      Toast.show({
+        type: "error",
+        text1: "Uh Oh",
+        text2: "Finish your word!",
+      });
+      return;
+    }
+    if (!words.words.includes(currentGuess.toLowerCase())) {
+      Toast.show({
+        type: "error",
+        text1: "Uh Oh",
+        text2: "Word not recognised",
+      });
       return;
     }
     setGuesses([...guesses, currentGuess]);
@@ -124,6 +134,7 @@ export default function App() {
         closeMatchLetters={closeMatchLetters}
         incorrectLetters={incorrectLetters}
       />
+      <Toast />
     </View>
   );
 }
