@@ -60,6 +60,14 @@ export default function App() {
       });
       return;
     }
+    if (guesses.includes(currentGuess)) {
+      Toast.show({
+        type: "error",
+        text1: "Uh Oh",
+        text2: "You've already guessed this word",
+      });
+      return;
+    }
     setGuesses([...guesses, currentGuess]);
     setCurrentGuess("");
     // detect whether the game has been won
