@@ -78,6 +78,14 @@ export default function Guess({
         }
         setTileColours(tileColoursCopy);
       });
+    } else {
+      setTileColours([
+        styles.whiteBackground,
+        styles.whiteBackground,
+        styles.whiteBackground,
+        styles.whiteBackground,
+        styles.whiteBackground,
+      ]);
     }
   }, [submitted]);
 
@@ -86,27 +94,52 @@ export default function Guess({
   return (
     <View style={styles.guess}>
       <View style={[styles.guessBox, tileColours[0]]}>
-        <Text style={[styles.letter, submitted && styles.whiteText]}>
+        <Text
+          style={[
+            styles.letter,
+            submitted ? styles.whiteText : styles.blackText,
+          ]}
+        >
           {value[0] ?? ""}
         </Text>
       </View>
       <View style={[styles.guessBox, tileColours[1]]}>
-        <Text style={[styles.letter, submitted && styles.whiteText]}>
+        <Text
+          style={[
+            styles.letter,
+            submitted ? styles.whiteText : styles.blackText,
+          ]}
+        >
           {value[1] ?? ""}
         </Text>
       </View>
       <View style={[styles.guessBox, tileColours[2]]}>
-        <Text style={[styles.letter, submitted && styles.whiteText]}>
+        <Text
+          style={[
+            styles.letter,
+            submitted ? styles.whiteText : styles.blackText,
+          ]}
+        >
           {value[2] ?? ""}
         </Text>
       </View>
       <View style={[styles.guessBox, tileColours[3]]}>
-        <Text style={[styles.letter, submitted && styles.whiteText]}>
+        <Text
+          style={[
+            styles.letter,
+            submitted ? styles.whiteText : styles.blackText,
+          ]}
+        >
           {value[3] ?? ""}
         </Text>
       </View>
       <View style={[styles.guessBox, tileColours[4]]}>
-        <Text style={[styles.letter, submitted && styles.whiteText]}>
+        <Text
+          style={[
+            styles.letter,
+            submitted ? styles.whiteText : styles.blackText,
+          ]}
+        >
           {value[4] ?? ""}
         </Text>
       </View>
@@ -149,5 +182,8 @@ const styles = StyleSheet.create({
   },
   whiteText: {
     color: "white",
+  },
+  blackText: {
+    color: "black",
   },
 });

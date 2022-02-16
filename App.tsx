@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, Modal, Text, Pressable } from "react-native";
 import Guess from "./Guess";
 import Keyboard from "./Keyboard";
 import * as words from "./fiveLetterWords.json";
@@ -12,7 +12,7 @@ type GameState = "inProgress" | "won" | "lost";
 export default function App() {
   const [guesses, setGuesses] = useState<string[]>([]);
   const [currentGuess, setCurrentGuess] = useState("");
-  const [answer] = useState(
+  const [answer, setAnswer] = useState(
     wordList[Math.round(Math.random() * (wordList.length - 1))]
   );
   const [correctLetters, setCorrectLetters] = useState<string[]>([]);
@@ -74,16 +74,15 @@ export default function App() {
     setGuesses([...guesses, currentGuess]);
     setCurrentGuess("");
     if (currentGuess.toLowerCase() === answer.toLowerCase()) {
-      setGameState("won");
+      setTimeout(() => {
+        setGameState("won");
+      }, 1500);
       return;
     }
     if (guesses.length === 5) {
       setTimeout(() => {
-        Toast.show({
-          text2: "Womp Womp You Lost",
-        });
+        setGameState("lost");
       }, 1500);
-      setGameState("lost");
       return;
     }
     // detect whether the game has been won or lost
@@ -100,6 +99,16 @@ export default function App() {
     if (currentGuess.length > 0) {
       setCurrentGuess(currentGuess.slice(0, -1));
     }
+  };
+
+  const resetGameBoard = () => {
+    setGuesses([]);
+    setCurrentGuess("");
+    setAnswer(wordList[Math.round(Math.random() * (wordList.length - 1))]);
+    setCloseMatchLetters([]);
+    setCorrectLetters([]);
+    setIncorrectLetters([]);
+    setGameState("inProgress");
   };
 
   return (
@@ -160,6 +169,26 @@ export default function App() {
         closeMatchLetters={closeMatchLetters}
         incorrectLetters={incorrectLetters}
       />
+      <Modal
+        visible={["won", "lost"].includes(gameState)}
+        animationType="slide"
+        transparent={true}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            {gameState === "won" && <Text>Im a model and I won</Text>}
+            {gameState === "lost" && (
+              <Text>Im a model and I lost {answer}</Text>
+            )}
+            <Pressable
+              style={[styles.button, styles.buttonClose]}
+              onPress={() => resetGameBoard()}
+            >
+              <Text style={styles.textStyle}>Start New Game</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
       <Toast />
     </View>
   );
@@ -171,5 +200,42 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22,
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonOpen: {
+    backgroundColor: "#F194FF",
+  },
+  buttonClose: {
+    backgroundColor: "#2196F3",
+  },
+  textStyle: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
   },
 });
