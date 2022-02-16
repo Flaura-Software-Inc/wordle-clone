@@ -7,6 +7,8 @@ import Toast from "react-native-toast-message";
 
 const wordList = words.words;
 
+type GameState = "inProgress" | "won" | "lost";
+
 export default function App() {
   const [guesses, setGuesses] = useState<string[]>([]);
   const [currentGuess, setCurrentGuess] = useState("");
@@ -16,6 +18,7 @@ export default function App() {
   const [correctLetters, setCorrectLetters] = useState<string[]>([]);
   const [closeMatchLetters, setCloseMatchLetters] = useState<string[]>([]);
   const [incorrectLetters, setIncorrectLetters] = useState<string[]>([]);
+  const [gameState, setGameState] = useState<GameState>("inProgress");
 
   const addCorrectLetter = (char: string) => {
     if (closeMatchLetters.indexOf(char) !== -1) {
@@ -70,7 +73,22 @@ export default function App() {
     }
     setGuesses([...guesses, currentGuess]);
     setCurrentGuess("");
-    // detect whether the game has been won
+    if (currentGuess.toLowerCase() === answer.toLowerCase()) {
+      setGameState("won");
+      return;
+    }
+    if (guesses.length === 5) {
+      setTimeout(() => {
+        Toast.show({
+          text2: "Womp Womp You Lost",
+        });
+      }, 1500);
+      setGameState("lost");
+      return;
+    }
+    // detect whether the game has been won or lost
+    // if lost toast/modal with answer
+    // if win modal and 'refresh' button
   };
 
   const onKeyPress = (char: string) => {

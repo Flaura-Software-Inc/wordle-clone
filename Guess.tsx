@@ -45,19 +45,20 @@ export default function Guess({
   useEffect(() => {
     if (submitted) {
       const guessLetterMap: Map<string, number[]> = createLetterMap(value);
+      const tileColoursCopy = [...tileColours];
 
       Array.from(guessLetterMap.keys()).forEach((char) => {
         let charIndexes = guessLetterMap.get(char);
 
         if (!answerLetterMap.has(char)) {
           charIndexes!.forEach(
-            (charIdx) => (tileColours[charIdx] = styles.greyBackground)
+            (charIdx) => (tileColoursCopy[charIdx] = styles.greyBackground)
           );
           addIncorrectLetter(char);
         } else {
           charIndexes!.forEach((charIdx) => {
             if (answerLetterMap.get(char)!.includes(charIdx)) {
-              tileColours[charIdx] = styles.greenBackground;
+              tileColoursCopy[charIdx] = styles.greenBackground;
               charIndexes = charIndexes!.filter((idx) => idx !== charIdx);
               answerLetterMap.set(
                 char,
@@ -68,13 +69,14 @@ export default function Guess({
           });
           charIndexes!.forEach((charIdx, i) => {
             if (i < answerLetterMap.get(char)!.length) {
-              tileColours[charIdx] = styles.yellowBackground;
+              tileColoursCopy[charIdx] = styles.yellowBackground;
               addCloseMatchLetter(char);
             } else {
-              tileColours[charIdx] = styles.greyBackground;
+              tileColoursCopy[charIdx] = styles.greyBackground;
             }
           });
         }
+        setTileColours(tileColoursCopy);
       });
     }
   }, [submitted]);
