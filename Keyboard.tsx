@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ViewStyle, TextStyle } from "react-native";
+import { StyleSheet, Text, View, ViewStyle, TextStyle, TouchableOpacity } from "react-native";
 
 type KeyboardProps = {
   onKeyPress: (_: string) => void;
@@ -8,6 +8,27 @@ type KeyboardProps = {
   closeMatchLetters: string[];
   incorrectLetters: string[];
 };
+
+type KeyProps = {
+  onKeyPress: (_: string) => void;
+  keyStyles: [{}, {}],
+  char: string
+}
+
+const Key = ({ keyStyles, onKeyPress, char}: KeyProps) => {
+  return(
+    <TouchableOpacity>
+      <View
+      style={[styles.keyboardKey, keyStyles[0]]}
+      onTouchEnd={() => onKeyPress(char)}
+      key={`key-${char}`}
+      >
+        <Text style={[styles.keyboardLetter, keyStyles[1]]}>{char}</Text>
+      </View>
+    </TouchableOpacity>
+    
+  )
+}
 
 export default function Keyboard({
   onKeyPress,
@@ -39,13 +60,7 @@ export default function Keyboard({
         {topRow.split("").map((char) => {
           const keyStyles = calculateKeyStyles(char);
           return (
-            <View
-              style={[styles.keyboardKey, keyStyles[0]]}
-              onTouchEnd={() => onKeyPress(char)}
-              key={`key-${char}`}
-            >
-              <Text style={[styles.keyboardLetter, keyStyles[1]]}>{char}</Text>
-            </View>
+            <Key keyStyles={keyStyles} onKeyPress={onKeyPress} char={char} key={`key-${char}`}/>
           );
         })}
       </View>
@@ -53,13 +68,7 @@ export default function Keyboard({
         {middleRow.split("").map((char) => {
           const keyStyles = calculateKeyStyles(char);
           return (
-            <View
-              style={[styles.keyboardKey, keyStyles[0]]}
-              onTouchEnd={() => onKeyPress(char)}
-              key={`key-${char}`}
-            >
-              <Text style={[styles.keyboardLetter, keyStyles[1]]}>{char}</Text>
-            </View>
+            <Key keyStyles={keyStyles} onKeyPress={onKeyPress} char={char} key={`key-${char}`}/>
           );
         })}
       </View>
@@ -70,13 +79,7 @@ export default function Keyboard({
         {bottomRow.split("").map((char) => {
           const keyStyles = calculateKeyStyles(char);
           return (
-            <View
-              style={[styles.keyboardKey, keyStyles[0]]}
-              onTouchEnd={() => onKeyPress(char)}
-              key={`key-${char}`}
-            >
-              <Text style={[styles.keyboardLetter, keyStyles[1]]}>{char}</Text>
-            </View>
+            <Key keyStyles={keyStyles} onKeyPress={onKeyPress} char={char} key={`key-${char}`}/>
           );
         })}
         <View onTouchEnd={() => onDelete()}>
@@ -108,6 +111,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginLeft: 3,
     marginRight: 3,
+    borderRadius: 5
   },
   keyboardLetter: {
     fontSize: 20,
