@@ -85,9 +85,6 @@ export default function App() {
       }, 1500);
       return;
     }
-    // detect whether the game has been won or lost
-    // if lost toast/modal with answer
-    // if win modal and 'refresh' button
   };
 
   const onKeyPress = (char: string) => {
@@ -113,54 +110,57 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <Guess
-        value={guesses[0] ?? (guesses.length === 0 ? currentGuess : "")}
-        submitted={guesses.length >= 1}
-        answer={answer}
-        addCorrectLetter={addCorrectLetter}
-        addCloseMatchLetter={addCloseMatchLetter}
-        addIncorrectLetter={addIncorrectLetter}
-      />
-      <Guess
-        value={guesses[1] ?? (guesses.length === 1 ? currentGuess : "")}
-        submitted={guesses.length >= 2}
-        answer={answer}
-        addCorrectLetter={addCorrectLetter}
-        addCloseMatchLetter={addCloseMatchLetter}
-        addIncorrectLetter={addIncorrectLetter}
-      />
-      <Guess
-        value={guesses[2] ?? (guesses.length === 2 ? currentGuess : "")}
-        submitted={guesses.length >= 3}
-        answer={answer}
-        addCorrectLetter={addCorrectLetter}
-        addCloseMatchLetter={addCloseMatchLetter}
-        addIncorrectLetter={addIncorrectLetter}
-      />
-      <Guess
-        value={guesses[3] ?? (guesses.length === 3 ? currentGuess : "")}
-        submitted={guesses.length >= 4}
-        answer={answer}
-        addCorrectLetter={addCorrectLetter}
-        addCloseMatchLetter={addCloseMatchLetter}
-        addIncorrectLetter={addIncorrectLetter}
-      />
-      <Guess
-        value={guesses[4] ?? (guesses.length === 4 ? currentGuess : "")}
-        submitted={guesses.length >= 5}
-        answer={answer}
-        addCorrectLetter={addCorrectLetter}
-        addCloseMatchLetter={addCloseMatchLetter}
-        addIncorrectLetter={addIncorrectLetter}
-      />
-      <Guess
-        value={guesses[5] ?? (guesses.length === 5 ? currentGuess : "")}
-        submitted={guesses.length >= 6}
-        answer={answer}
-        addCorrectLetter={addCorrectLetter}
-        addCloseMatchLetter={addCloseMatchLetter}
-        addIncorrectLetter={addIncorrectLetter}
-      />
+      <View style={styles.guessesContainer}>
+        <Guess
+          value={guesses[0] ?? (guesses.length === 0 ? currentGuess : "")}
+          submitted={guesses.length >= 1}
+          answer={answer}
+          addCorrectLetter={addCorrectLetter}
+          addCloseMatchLetter={addCloseMatchLetter}
+          addIncorrectLetter={addIncorrectLetter}
+        />
+        <Guess
+          value={guesses[1] ?? (guesses.length === 1 ? currentGuess : "")}
+          submitted={guesses.length >= 2}
+          answer={answer}
+          addCorrectLetter={addCorrectLetter}
+          addCloseMatchLetter={addCloseMatchLetter}
+          addIncorrectLetter={addIncorrectLetter}
+        />
+        <Guess
+          value={guesses[2] ?? (guesses.length === 2 ? currentGuess : "")}
+          submitted={guesses.length >= 3}
+          answer={answer}
+          addCorrectLetter={addCorrectLetter}
+          addCloseMatchLetter={addCloseMatchLetter}
+          addIncorrectLetter={addIncorrectLetter}
+        />
+        <Guess
+          value={guesses[3] ?? (guesses.length === 3 ? currentGuess : "")}
+          submitted={guesses.length >= 4}
+          answer={answer}
+          addCorrectLetter={addCorrectLetter}
+          addCloseMatchLetter={addCloseMatchLetter}
+          addIncorrectLetter={addIncorrectLetter}
+        />
+        <Guess
+          value={guesses[4] ?? (guesses.length === 4 ? currentGuess : "")}
+          submitted={guesses.length >= 5}
+          answer={answer}
+          addCorrectLetter={addCorrectLetter}
+          addCloseMatchLetter={addCloseMatchLetter}
+          addIncorrectLetter={addIncorrectLetter}
+        />
+        <Guess
+          value={guesses[5] ?? (guesses.length === 5 ? currentGuess : "")}
+          submitted={guesses.length >= 6}
+          answer={answer}
+          addCorrectLetter={addCorrectLetter}
+          addCloseMatchLetter={addCloseMatchLetter}
+          addIncorrectLetter={addIncorrectLetter}
+        />
+      </View>
+
       <Keyboard
         onKeyPress={onKeyPress}
         onDelete={onDelete}
@@ -176,15 +176,23 @@ export default function App() {
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            {gameState === "won" && <Text>Im a model and I won</Text>}
+            {gameState === "won" && (
+              <Text style={styles.modalTitle}>You Won!</Text>
+            )}
             {gameState === "lost" && (
-              <Text>Im a model and I lost {answer}</Text>
+              <View style={styles.modalCenterText}>
+                <Text style={styles.modalTitle}>You Lost</Text>
+                <View>
+                  <Text style={styles.textStyle}>The correct word was</Text>
+                  <Text style={styles.textStyle}>{answer.toUpperCase()}</Text>
+                </View>
+              </View>
             )}
             <Pressable
               style={[styles.button, styles.buttonClose]}
               onPress={() => resetGameBoard()}
             >
-              <Text style={styles.textStyle}>Start New Game</Text>
+              <Text style={styles.buttonText}>Start New Game</Text>
             </Pressable>
           </View>
         </View>
@@ -200,6 +208,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
+  },
+  guessesContainer: {
+    marginBottom: 20,
   },
   centeredView: {
     flex: 1,
@@ -221,6 +232,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
+    width: "50%",
+    height: "30%",
+    justifyContent: "space-between",
   },
   button: {
     borderRadius: 20,
@@ -234,8 +248,21 @@ const styles = StyleSheet.create({
     backgroundColor: "#2196F3",
   },
   textStyle: {
+    color: "black",
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  buttonText: {
     color: "white",
     fontWeight: "bold",
     textAlign: "center",
+  },
+  modalTitle: {
+    color: "black",
+    fontWeight: "bold",
+    fontSize: 32,
+  },
+  modalCenterText: {
+    alignItems: "center",
   },
 });

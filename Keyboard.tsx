@@ -1,4 +1,11 @@
-import { StyleSheet, Text, View, ViewStyle, TextStyle, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  ViewStyle,
+  TextStyle,
+  TouchableOpacity,
+} from "react-native";
 
 type KeyboardProps = {
   onKeyPress: (_: string) => void;
@@ -11,24 +18,23 @@ type KeyboardProps = {
 
 type KeyProps = {
   onKeyPress: (_: string) => void;
-  keyStyles: [{}, {}],
-  char: string
-}
+  keyStyles: [ViewStyle, TextStyle];
+  char: string;
+};
 
-const Key = ({ keyStyles, onKeyPress, char}: KeyProps) => {
-  return(
+const Key = ({ keyStyles, onKeyPress, char }: KeyProps) => {
+  return (
     <TouchableOpacity>
       <View
-      style={[styles.keyboardKey, keyStyles[0]]}
-      onTouchEnd={() => onKeyPress(char)}
-      key={`key-${char}`}
+        style={[styles.keyBase, styles.letterKey, keyStyles[0]]}
+        onTouchEnd={() => onKeyPress(char)}
+        key={`key-${char}`}
       >
-        <Text style={[styles.keyboardLetter, keyStyles[1]]}>{char}</Text>
+        <Text style={[styles.letter, keyStyles[1]]}>{char}</Text>
       </View>
     </TouchableOpacity>
-    
-  )
-}
+  );
+};
 
 export default function Keyboard({
   onKeyPress,
@@ -60,7 +66,12 @@ export default function Keyboard({
         {topRow.split("").map((char) => {
           const keyStyles = calculateKeyStyles(char);
           return (
-            <Key keyStyles={keyStyles} onKeyPress={onKeyPress} char={char} key={`key-${char}`}/>
+            <Key
+              keyStyles={keyStyles}
+              onKeyPress={onKeyPress}
+              char={char}
+              key={`key-${char}`}
+            />
           );
         })}
       </View>
@@ -68,23 +79,43 @@ export default function Keyboard({
         {middleRow.split("").map((char) => {
           const keyStyles = calculateKeyStyles(char);
           return (
-            <Key keyStyles={keyStyles} onKeyPress={onKeyPress} char={char} key={`key-${char}`}/>
+            <Key
+              keyStyles={keyStyles}
+              onKeyPress={onKeyPress}
+              char={char}
+              key={`key-${char}`}
+            />
           );
         })}
       </View>
       <View style={styles.keyboardRow}>
-        <View onTouchEnd={onSubmit}>
-          <Text>Submit</Text>
-        </View>
+        <TouchableOpacity>
+          <View
+            onTouchEnd={onSubmit}
+            style={[styles.keyBase, styles.actionKey]}
+          >
+            <Text>Submit</Text>
+          </View>
+        </TouchableOpacity>
         {bottomRow.split("").map((char) => {
           const keyStyles = calculateKeyStyles(char);
           return (
-            <Key keyStyles={keyStyles} onKeyPress={onKeyPress} char={char} key={`key-${char}`}/>
+            <Key
+              keyStyles={keyStyles}
+              onKeyPress={onKeyPress}
+              char={char}
+              key={`key-${char}`}
+            />
           );
         })}
-        <View onTouchEnd={() => onDelete()}>
-          <Text>Delete</Text>
-        </View>
+        <TouchableOpacity>
+          <View
+            onTouchEnd={() => onDelete()}
+            style={[styles.keyBase, styles.actionKey]}
+          >
+            <Text>Delete</Text>
+          </View>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -92,7 +123,7 @@ export default function Keyboard({
 
 const styles = StyleSheet.create({
   keyboard: {
-    marginTop: 20,
+    marginTop: 40,
     width: "85%",
   },
   keyboardRow: {
@@ -101,19 +132,23 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginTop: 10,
   },
-  keyboardKey: {
+  keyBase: {
     fontSize: 25,
-    width: 30,
     height: 50,
     borderColor: "black",
     borderWidth: 2,
     alignItems: "center",
     justifyContent: "center",
-    marginLeft: 3,
-    marginRight: 3,
-    borderRadius: 5
+    borderRadius: 5,
+    marginHorizontal: 3,
   },
-  keyboardLetter: {
+  letterKey: {
+    width: 32,
+  },
+  actionKey: {
+    paddingHorizontal: 3,
+  },
+  letter: {
     fontSize: 20,
   },
   greenBackground: {
