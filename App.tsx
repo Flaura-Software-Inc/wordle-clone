@@ -110,7 +110,7 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.guessesContainer}>
+      <View>
         <Guess
           value={guesses[0] ?? (guesses.length === 0 ? currentGuess : "")}
           submitted={guesses.length >= 1}
@@ -208,9 +208,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
-  },
-  guessesContainer: {
-    marginBottom: 20,
   },
   centeredView: {
     flex: 1,
